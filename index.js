@@ -18,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // Routes
+app.get("/", (req, res) => res.send("Express on Vercel"));
 app.use('/api/auth', require('./routes/authRoutes'))
 
 // Connect to the database and start the server
