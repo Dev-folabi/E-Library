@@ -30,7 +30,10 @@ exports.uploadDocument = async (req, res) => {
 
     res.status(201).json({ message: 'Document uploaded successfully', document: newDocument });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to upload document' });
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    res.status(500).json({ error: 'Failed to upload document', details: error.message });
   }
 };
 
@@ -43,7 +46,7 @@ exports.getDocumentById = async (req, res) => {
     }
     res.status(200).json(document);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve document' });
+    res.status(500).json({ error: 'Failed to retrieve document', details: error.message });
   }
 };
 
@@ -88,7 +91,10 @@ exports.updateDocumentById = async (req, res) => {
 
     res.status(200).json({ message: 'Document updated successfully', document: updatedDocument });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update document' });
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    res.status(500).json({ error: 'Failed to update document', details: error.message });
   }
 };
 
@@ -112,7 +118,7 @@ exports.deleteDocumentById = async (req, res) => {
 
     res.status(200).json({ message: 'Document deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete document' });
+    res.status(500).json({ error: 'Failed to delete document', details: error.message });
   }
 };
 
@@ -120,10 +126,13 @@ exports.deleteDocumentById = async (req, res) => {
 exports.getDocumentsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const documents = await Document.find({ category: category });
+    const documents = await Document.find({ category });
+    if (!documents || documents.length === 0) {
+      return res.status(404).json({ error: 'No documents found for the specified category' });
+    }
     res.status(200).json(documents);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve documents' });
+    res.status(500).json({ error: 'Failed to retrieve documents', details: error.message });
   }
 };
 
@@ -132,9 +141,12 @@ exports.filterDocuments = async (req, res) => {
   try {
     const filter = req.query;
     const documents = await Document.find(filter);
+    if (!documents || documents.length === 0) {
+      return res.status(404).json({ error: 'No documents found matching the specified criteria' });
+    }
     res.status(200).json(documents);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to filter documents' });
+    res.status(500).json({ error: 'Failed to filter documents', details: error.message });
   }
 };
 
@@ -149,32 +161,38 @@ exports.searchDocuments = async (req, res) => {
         { category: { $regex: query, $options: 'i' } }
       ]
     });
+    if (!documents || documents.length === 0) {
+      return res.status(404).json({ error: 'No documents found matching the search criteria' });
+    }
     res.status(200).json(documents);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to search documents' });
+    res.status(500).json({ error: 'Failed to search documents', details: error.message });
   }
 };
-
 
 // Get the latest 30 documents
 exports.getLatestDocuments = async (req, res) => {
   try {
     const documents = await Document.find().sort({ createdAt: -1 }).limit(30);
+    if (!documents || documents.length === 0) {
+      return res.status(404).json({ error: 'No documents found' });
+    }
     res.status(200).json(documents);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve the latest documents' });
+    res.status(500).json({ error: 'Failed to retrieve the latest documents', details: error.message });
   }
 };
-
 
 // Get random 30 documents
 exports.getRandomDocuments = async (req, res) => {
   try {
     const count = await Document.countDocuments();
     const randomDocuments = await Document.aggregate([{ $sample: { size: Math.min(count, 30) } }]);
+    if (!randomDocuments || randomDocuments.length === 0) {
+      return res.status(404).json({ error: 'No documents found' });
+    }
     res.status(200).json(randomDocuments);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve random documents' });
+    res.status(500).json({ error: 'Failed to retrieve random documents', details: error.message });
   }
 };
-
