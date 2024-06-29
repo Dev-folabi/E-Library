@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 
-const bookSchema = new mongoose.Schema({
+
+const documentSchema = new mongoose.Schema({
     title: { type: String, required: true },
     code: { type: String },
     category: [ { type: String } ],
+    document: { type: String, required: true },
     createdAt: { type: Date, default: Date.now}
 });
 
-module.exports = mongoose.model('Book', bookSchema);
+module.exports = mongoose.model('Document', documentSchema);
