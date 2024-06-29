@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // Routes
-app.get("/", (req, res) => res.send("Welcome to E-library APIs"));
+app.get("/", (req, res) => res.send("Welcome to e-Library APIs"));
 app.use('/api/auth', require('./routes/authRoutes'))
 app.use('/api/category', require('./routes/categoryRoutes'))
 app.use('/api/document', require('./routes/documentRoutes'))
