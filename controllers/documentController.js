@@ -1,29 +1,27 @@
 const Document = require('../models/documentModel');
-const cloudinary = require('../config/cloudinary');
+const cloudinary = require('../config/cloudinaryConfig');
 const fs = require('fs');
 
 // Upload a new Document
 exports.uploadDocument = async (req, res) => {
   try {
     const { title, code, category } = req.body;
-    const file = req.file;
 
-    if (!file) {
-      return res.status(400).json({ error: 'No file uploaded' });
-    }
-
-    // Upload file to Cloudinary
-    const result = await cloudinary.uploader.upload(file.path, {
+    // Upload the file to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
       resource_type: 'auto',
-      folder: 'documents'
+      folder: 'documents',
+      use_filename: true,
+      unique_filename: false
     });
-console.log(result)
+
     // Remove file from server after upload
-    fs.unlinkSync(file.path);
+    fs.unlinkSync(req.file.path);
 
     const newDocument = new Document({
       title,
       document: result.secure_url,
+      documentPublicId: result.public_id,
       code,
       category
     });
@@ -53,26 +51,42 @@ exports.getDocumentById = async (req, res) => {
 exports.updateDocumentById = async (req, res) => {
   try {
     const { title, code, category } = req.body;
+    const documentId = req.params.id;
+
+    // Find the document to get the current Cloudinary public ID
+    const existingDocument = await Document.findById(documentId);
+    if (!existingDocument) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
     const updatedData = { title, code, category };
 
     if (req.file) {
-      // Upload new file to Cloudinary
+      // Delete the old file from Cloudinary
+      const oldPublicId = existingDocument.documentPublicId;
+      await cloudinary.uploader.destroy(oldPublicId);
+
+      // Upload the new file to Cloudinary
       const result = await cloudinary.uploader.upload(req.file.path, {
         resource_type: 'auto',
-        folder: 'documents'
+        folder: 'documents',
+        use_filename: true,
+        unique_filename: false
       });
 
       // Remove file from server after upload
       fs.unlinkSync(req.file.path);
 
       updatedData.document = result.secure_url;
+      updatedData.documentPublicId = result.public_id;
     }
 
-    const document = await Document.findByIdAndUpdate(req.params.id, updatedData, { new: true });
-    if (!document) {
+    const updatedDocument = await Document.findByIdAndUpdate(documentId, updatedData, { new: true });
+    if (!updatedDocument) {
       return res.status(404).json({ error: 'Document not found' });
     }
-    res.status(200).json({ message: 'Document updated successfully', document });
+
+    res.status(200).json({ message: 'Document updated successfully', document: updatedDocument });
   } catch (error) {
     res.status(500).json({ error: 'Failed to update document' });
   }
@@ -81,10 +95,21 @@ exports.updateDocumentById = async (req, res) => {
 // Delete a Document by ID
 exports.deleteDocumentById = async (req, res) => {
   try {
-    const document = await Document.findByIdAndDelete(req.params.id);
-    if (!document) {
+    const documentId = req.params.id;
+
+    // Find the document to get the Cloudinary public ID
+    const existingDocument = await Document.findById(documentId);
+    if (!existingDocument) {
       return res.status(404).json({ error: 'Document not found' });
     }
+
+    // Delete the file from Cloudinary
+    const publicId = existingDocument.documentPublicId;
+    await cloudinary.uploader.destroy(publicId);
+
+    // Delete the document from the database
+    await Document.findByIdAndDelete(documentId);
+
     res.status(200).json({ message: 'Document deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete document' });
@@ -129,3 +154,4 @@ exports.searchDocuments = async (req, res) => {
     res.status(500).json({ error: 'Failed to search documents' });
   }
 };
+
