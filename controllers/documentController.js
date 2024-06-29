@@ -155,3 +155,26 @@ exports.searchDocuments = async (req, res) => {
   }
 };
 
+
+// Get the latest 30 documents
+exports.getLatestDocuments = async (req, res) => {
+  try {
+    const documents = await Document.find().sort({ createdAt: -1 }).limit(30);
+    res.status(200).json(documents);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve the latest documents' });
+  }
+};
+
+
+// Get random 30 documents
+exports.getRandomDocuments = async (req, res) => {
+  try {
+    const count = await Document.countDocuments();
+    const randomDocuments = await Document.aggregate([{ $sample: { size: Math.min(count, 30) } }]);
+    res.status(200).json(randomDocuments);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve random documents' });
+  }
+};
+

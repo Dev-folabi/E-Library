@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../config/multer');
-const { uploadDocument, getDocumentById, updateDocumentById, deleteDocumentById, getDocumentsByCategory, filterDocuments, searchDocuments } = require('../controllers/documentController');
+const { uploadDocument, getDocumentById, updateDocumentById, deleteDocumentById, getDocumentsByCategory, filterDocuments, searchDocuments, getRandomDocuments, getLatestDocuments } = require('../controllers/documentController');
 const { authorize } = require('../middlewares/auth');
 const { incrementTotalDocument } = require('../middlewares/libraryMiddleware');
 
@@ -25,5 +25,11 @@ router.get('/', filterDocuments);
 
 // Search documents
 router.get('/search', searchDocuments);
+
+// Get the latest 30 documents
+router.get('/latest', getLatestDocuments);
+
+// Get random 30 documents
+router.get('/random', getRandomDocuments);
 
 module.exports = router;
