@@ -21,6 +21,10 @@ app.use(cors());
 app.get("/", (req, res) => res.send("Express on Vercel"));
 app.use('/api/auth', require('./routes/authRoutes'))
 app.use('/api/category', require('./routes/categoryRoutes'))
+app.use('/api/document', require('./routes/documentRoutes'))
+app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/user', require('./routes/userRoutes'));
+app.use('/api/actions', require('./routes/userActionRoutes'));
 
 // Connect to the database and start the server
 connectDB().then(() => {

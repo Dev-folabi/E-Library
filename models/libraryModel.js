@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const storeInfoSchema = new mongoose.Schema({
+const librarySchema = new mongoose.Schema({
     totalUser: { type: Number, default: 0 },
     totalDocument: { type: Number, default: 0 },
     totalCategroy: { type: Number, default: 0 },
@@ -9,4 +9,4 @@ const storeInfoSchema = new mongoose.Schema({
     totalDownload: { type: Number, default: 0 }
 });
 
-module.exports = mongoose.model('StoreInfo', storeInfoSchema);
+module.exports = mongoose.model('Library', librarySchema);

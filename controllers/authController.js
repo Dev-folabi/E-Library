@@ -1,5 +1,6 @@
 const Admin = require("../models/adminModel");
 const User = require("../models/userModel");
+const Library = require('../models/libraryModel')
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const {
@@ -61,6 +62,7 @@ exports.userSignup = async (req, res) => {
     });
     await user.save();
 
+    
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_PRIVATE_KEY,
@@ -136,50 +138,3 @@ exports.userLogin = async (req, res) => {
   }
 };
 
-// Update Admin
-exports.updateAdmin = async (req, res) => {
-  const { error } = updateAdminSchema.validate(req.body);
-  if (error) return res.status(400).json({ msg: error.details[0].message });
-
-  const { name, email } = req.body;
-
-  try {
-
-    const existAdmin = await Admin.findById(req.user._id);
-    if (!existAdmin) return res.status(400).json({ msg: "Admin does not exist" });
-
-    const updatedAdmin = await Admin.findByIdAndUpdate(
-        req.user._id,
-      { name, email },
-      { new: true }
-    );
-
-    res.status(200).json(updatedAdmin);
-  } catch (err) {
-    res.status(500).json({ msg: "Server error", error: err.message });
-  }
-};
-
-// Update user
-exports.updateUser = async (req, res) => {
-  const { error } = updateUserSchema.validate(req.body);
-  if (error) return res.status(400).json({ msg: error.details[0].message });
-
-  const { name, email, gender, phone } = req.body;
-
-  try {
-
-    const existUser= await User.findById(req.user._id);
-    if (!existUser) return res.status(400).json({ msg: "User does not exist" });
-
-    const updatedUser = await User.findByIdAndUpdate(
-        req.user._id,
-      { name, email, gender, phone },
-      { new: true }
-    );
-
-    res.status(200).json(updatedUser);
-  } catch (err) {
-    res.status(500).json({ msg: "Server error", error: err.message });
-  }
-};

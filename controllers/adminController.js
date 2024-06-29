@@ -1,107 +1,43 @@
-const Document = require('../models/documentModel');
+const User = require('../models/userModel');
+const Library = require('../models/libraryModel');
 
-
-// Upload a new Document
-exports.uploadDocument = async (req, res) => {
+// Admin Dashboard
+exports.getAdminDashboard = async (req, res) => {
   try {
-    const { title, code, category } = req.body;
-    const document = req.file.path;
-
-    const newDocument = new Document({
-      title,
-      document,
-      code,
-      category
-    });
-
-    await newDocument.save();
-    res.status(201).json({ message: 'Document uploaded successfully', Document: newDocument });
+    const libraryStats = await Library.findOne();
+    res.status(200).json({ libraryStats });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to upload Document' });
+    res.status(500).json({ error: 'Failed to retrieve admin dashboard data' });
   }
 };
 
-// Get a Document by ID
-exports.getDocumentById = async (req, res) => {
+// Admin Profile
+exports.getAdminProfile = async (req, res) => {
   try {
-    const Document = await Document.findById(req.params.id);
-    if (!Document) {
-      return res.status(404).json({ error: 'Document not found' });
+    const admin = await User.findById(req.user.id);
+    if (!admin) {
+      return res.status(404).json({ error: 'Admin not found' });
     }
-    res.status(200).json(Document);
+    res.status(200).json(admin);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve Document' });
+    res.status(500).json({ error: 'Failed to retrieve admin profile' });
   }
 };
 
-// Update a Document by ID
-exports.updateDocumentById = async (req, res) => {
+// Update Admin Profile
+exports.updateAdminProfile = async (req, res) => {
   try {
-    const { title, code, category } = req.body;
-    const updatedData = { title, code, category };
-
-    if (req.file) {
-      updatedData.document = req.file.path;
+    const { name, email, gender, phone } = req.body;
+    const admin = await User.findByIdAndUpdate(
+      req.user.id,
+      { name, email, gender, phone },
+      { new: true }
+    );
+    if (!admin) {
+      return res.status(404).json({ error: 'Admin not found' });
     }
-
-    const Document = await Document.findByIdAndUpdate(req.params.id, updatedData, { new: true });
-    if (!Document) {
-      return res.status(404).json({ error: 'Document not found' });
-    }
-    res.status(200).json({ message: 'Document updated successfully', Document });
+    res.status(200).json({ message: 'Profile updated successfully', admin });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update Document' });
-  }
-};
-
-// Delete a Document by ID
-exports.deleteDocumentById = async (req, res) => {
-  try {
-    const Document = await Document.findByIdAndDelete(req.params.id);
-    if (!Document) {
-      return res.status(404).json({ error: 'Document not found' });
-    }
-    res.status(200).json({ message: 'Document deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete Document' });
-  }
-};
-
-// Get Documents by category
-exports.getDocumentsByCategory = async (req, res) => {
-  try {
-    const { category } = req.params;
-    const Documents = await Document.find({ category: category });
-    res.status(200).json(Documents);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve Documents' });
-  }
-};
-
-// Filter Documents by query
-exports.filterDocuments = async (req, res) => {
-  try {
-    const filter = req.query;
-    const Documents = await Document.find(filter);
-    res.status(200).json(Documents);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to filter Documents' });
-  }
-};
-
-// Search Documents
-exports.searchDocuments = async (req, res) => {
-  try {
-    const { query } = req.query;
-    const Documents = await Document.find({
-      $or: [
-        { title: { $regex: query, $options: 'i' } },
-        { code: { $regex: query, $options: 'i' } },
-        { category: { $regex: query, $options: 'i' } }
-      ]
-    });
-    res.status(200).json(Documents);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to search Documents' });
+    res.status(500).json({ error: 'Failed to update admin profile' });
   }
 };

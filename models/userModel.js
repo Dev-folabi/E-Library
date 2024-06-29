@@ -5,7 +5,7 @@ const accessedDocumentSchema = new mongoose.Schema({
   title: { type: String },
   code: { type: String },
   category: [{ type: String }],
-  document: { type: mongoose.Schema.Types.ObjectId, ref: "Document" }, // Ensure 'Document' schema is defined
+  document: { type: mongoose.Schema.Types.ObjectId, ref: "Document" }, 
   accessedAt: { type: Date, default: Date.now }
 });
 
