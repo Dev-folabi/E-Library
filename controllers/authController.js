@@ -77,7 +77,7 @@ exports.userSignup = async (req, res) => {
 
     res.status(201).json({
       msg: "User signed up successfully",
-      token,
+      token: token,
       user: _.omit(user.toObject(), ["password"]),
     });
   } catch (err) {
