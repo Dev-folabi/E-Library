@@ -4,7 +4,7 @@ const Library = require('../models/libraryModel');
 exports.incrementTotalUser = async (req, res, next) => {
   try {
     await Library.updateOne({}, { $inc: { totalUser: 1 } }, { upsert: true });
-    next();
+    return next();
   } catch (error) {
     res.status(500).json({ error: 'Failed to update total user count', details: error.message });
   }
@@ -14,7 +14,7 @@ exports.incrementTotalUser = async (req, res, next) => {
 exports.decrementTotalUser = async (req, res, next) => {
   try {
     await Library.updateOne({}, { $inc: { totalUser: -1 } });
-    next();
+    return next();
   } catch (error) {
     res.status(500).json({ error: 'Failed to update total user count', details: error.message });
   }
@@ -24,7 +24,7 @@ exports.decrementTotalUser = async (req, res, next) => {
 exports.incrementTotalDocument = async (req, res, next) => {
   try {
     await Library.updateOne({}, { $inc: { totalDocument: 1 } }, { upsert: true });
-    next();
+    return next();
   } catch (error) {
     res.status(500).json({ error: 'Failed to update total document count', details: error.message });
   }
@@ -34,7 +34,7 @@ exports.incrementTotalDocument = async (req, res, next) => {
 exports.decrementTotalDocument = async (req, res, next) => {
   try {
     await Library.updateOne({}, { $inc: { totalDocument: -1 } });
-    next();
+    return next();
   } catch (error) {
     res.status(500).json({ error: 'Failed to update total document count', details: error.message });
   }
@@ -44,7 +44,7 @@ exports.decrementTotalDocument = async (req, res, next) => {
 exports.incrementTotalCategory = async (req, res, next) => {
   try {
     await Library.updateOne({}, { $inc: { totalCategory: 1 } }, { upsert: true });
-    next();
+    return next();
   } catch (error) {
     res.status(500).json({ error: 'Failed to update total category count', details: error.message });
   }
@@ -54,7 +54,7 @@ exports.incrementTotalCategory = async (req, res, next) => {
 exports.decrementTotalCategory = async (req, res, next) => {
   try {
     await Library.updateOne({}, { $inc: { totalCategory: -1 } });
-    next();
+    return next();
   } catch (error) {
     res.status(500).json({ error: 'Failed to update total category count', details: error.message });
   }

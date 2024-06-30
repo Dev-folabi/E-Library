@@ -3,10 +3,17 @@ const cloudinary = require('../config/cloudinaryConfig');
 const fs = require('fs');
 const { incrementTotalDocument, decrementTotalDocument } = require('../middlewares/libraryMiddleware');
 
+const deleteFile = (path) => {
+  if (fs.existsSync(path)) {
+    fs.unlinkSync(path);
+  }
+};
+
 // Upload a new Document
 exports.uploadDocument = async (req, res) => {
   try {
     const { title, code, category } = req.body;
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
     // Upload the file to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
@@ -17,7 +24,7 @@ exports.uploadDocument = async (req, res) => {
     });
 
     // Remove file from server after upload
-    fs.unlinkSync(req.file.path);
+    deleteFile(req.file.path);
 
     const newDocument = new Document({
       title,
@@ -29,12 +36,12 @@ exports.uploadDocument = async (req, res) => {
 
     await newDocument.save();
 
-    incrementTotalDocument()
+    await incrementTotalDocument();
 
     res.status(201).json({ message: 'Document uploaded successfully', document: newDocument });
   } catch (error) {
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+    if (req.file) {
+      deleteFile(req.file.path);
     }
     res.status(500).json({ error: 'Failed to upload document', details: error.message });
   }
@@ -81,7 +88,7 @@ exports.updateDocumentById = async (req, res) => {
       });
 
       // Remove file from server after upload
-      fs.unlinkSync(req.file.path);
+      deleteFile(req.file.path);
 
       updatedData.document = result.secure_url;
       updatedData.documentPublicId = result.public_id;
@@ -94,10 +101,10 @@ exports.updateDocumentById = async (req, res) => {
 
     res.status(200).json({ message: 'Document updated successfully', document: updatedDocument });
   } catch (error) {
-    if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
+    if (req.file) {
+      deleteFile(req.file.path);
     }
-    res.status(500).json({ error: 'Failed to update document', details: error.message });
+    res.status500().json({ error: 'Failed to update document', details: error.message });
   }
 };
 
@@ -119,8 +126,8 @@ exports.deleteDocumentById = async (req, res) => {
     // Delete the document from the database
     await Document.findByIdAndDelete(documentId);
 
-    decrementTotalDocument()
-    
+    await decrementTotalDocument();
+
     res.status(200).json({ message: 'Document deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete document', details: error.message });
