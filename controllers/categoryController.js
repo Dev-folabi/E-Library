@@ -7,6 +7,9 @@ exports.createCategory = async (req, res) => {
     const { name } = req.body;
     if (!name) return res.status(400).json({ message: 'Category name is required' });
 
+    const category = Category.find({name})
+    if(category) return res.status(400).json({ msg: "Category already exists" });
+
     const newCategory = new Category({ name });
     await newCategory.save();
 
