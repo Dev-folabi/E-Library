@@ -138,7 +138,7 @@ exports.deleteDocumentById = async (req, res, next) => {
 exports.getDocumentsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const documents = await Document.find({ category });
+    const documents = await Document.find({ category: category });
     if (!documents || documents.length === 0) {
       return res.status(404).json({ error: 'No documents found for the specified category' });
     }
@@ -147,6 +147,7 @@ exports.getDocumentsByCategory = async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve documents', details: error.message });
   }
 };
+
 
 // Filter Documents by query
 exports.filterDocuments = async (req, res) => {

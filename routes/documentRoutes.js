@@ -18,7 +18,7 @@ router.put('/:id', authorize('Admin'), dir,  upload.single('document'), updateDo
 router.delete('/:id', authorize('Admin'), deleteDocumentById);
 
 // Get documents by category
-router.get('/:category', getDocumentsByCategory);
+router.get('/category/:category', getDocumentsByCategory);
 
 // Filter documents by query parameters
 router.get('/', filterDocuments);
