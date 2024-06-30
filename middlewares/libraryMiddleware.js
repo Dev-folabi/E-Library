@@ -11,10 +11,10 @@ exports.incrementTotalUser = async () => {
 };
 
 // Middleware to decrement the total user count
-exports.decrementTotalUser = async (req, res, next) => {
+exports.decrementTotalUser = async () => {
   try {
     await Library.updateOne({}, { $inc: { totalUser: -1 } });
-    next();
+    return true
   } catch (error) {
     return next(new Error(`Failed to update total user count: ${error.message}`));
   }
@@ -41,20 +41,20 @@ exports.decrementTotalDocument = async () => {
 };
 
 // Middleware to increment the total category count
-exports.incrementTotalCategory = async (req, res, next) => {
+exports.incrementTotalCategory = async () => {
   try {
     await Library.updateOne({}, { $inc: { totalCategory: 1 } }, { upsert: true });
-    next();
+    return true
   } catch (error) {
     return next(new Error(`Failed to update total category count: ${error.message}`));
   }
 };
 
 // Middleware to decrement the total category count
-exports.decrementTotalCategory = async (req, res, next) => {
+exports.decrementTotalCategory = async () => {
   try {
     await Library.updateOne({}, { $inc: { totalCategory: -1 } });
-    next();
+    return true
   } catch (error) {
     return next(new Error(`Failed to update total category count: ${error.message}`));
   }

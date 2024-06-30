@@ -73,7 +73,7 @@ exports.userSignup = async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    incrementTotalUser();
+    await incrementTotalUser();
 
     res.status(201).json({
       msg: "User signed up successfully",

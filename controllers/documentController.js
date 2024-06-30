@@ -126,7 +126,7 @@ exports.deleteDocumentById = async (req, res, next) => {
     // Delete the document from the database
     await Document.findByIdAndDelete(documentId);
 
-    await decrementTotalDocument(req, res, next);
+    await decrementTotalDocument();
 
     res.status(200).json({ message: 'Document deleted successfully' });
   } catch (error) {
