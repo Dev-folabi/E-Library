@@ -14,7 +14,7 @@ exports.adminSignup = async (req, res) => {
   const { error } = adminSignupSchema.validate(req.body);
   if (error) return res.status(400).json({ msg: error.details[0].message });
 
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, gender } = req.body;
 
   try {
     
@@ -22,7 +22,7 @@ exports.adminSignup = async (req, res) => {
     if (admin) return res.status(400).json({ msg: "Admin already exists" });
 
     admin = new Admin({
-        name, email, password, role
+        name, email, password, role, gender
     });
     await admin.save();
 
