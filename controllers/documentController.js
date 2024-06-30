@@ -36,7 +36,7 @@ exports.uploadDocument = async (req, res, next) => {
 
     await newDocument.save();
 
-    await incrementTotalDocument(req, res, next);
+     await incrementTotalDocument();
 
     res.status(201).json({ message: 'Document uploaded successfully', document: newDocument });
   } catch (error) {

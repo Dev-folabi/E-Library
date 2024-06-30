@@ -1,10 +1,10 @@
 const Library = require('../models/libraryModel');
 
 // Middleware to increment the total user count
-exports.incrementTotalUser = async (req, res, next) => {
+exports.incrementTotalUser = async () => {
   try {
     await Library.updateOne({}, { $inc: { totalUser: 1 } }, { upsert: true });
-    next();
+    return true
   } catch (error) {
     return next(new Error(`Failed to update total user count: ${error.message}`));
   }
@@ -21,20 +21,20 @@ exports.decrementTotalUser = async (req, res, next) => {
 };
 
 // Middleware to increment the total document count
-exports.incrementTotalDocument = async (req, res, next) => {
+exports.incrementTotalDocument = async () => {
   try {
     await Library.updateOne({}, { $inc: { totalDocument: 1 } }, { upsert: true });
-    next();
+    return true
   } catch (error) {
     return next(new Error(`Failed to update total document count: ${error.message}`));
   }
 };
 
 // Middleware to decrement the total document count
-exports.decrementTotalDocument = async (req, res, next) => {
+exports.decrementTotalDocument = async () => {
   try {
     await Library.updateOne({}, { $inc: { totalDocument: -1 } });
-    next();
+    return true
   } catch (error) {
     return next(new Error(`Failed to update total document count: ${error.message}`));
   }
