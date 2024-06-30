@@ -1,6 +1,7 @@
 const Document = require('../models/documentModel');
 const cloudinary = require('../config/cloudinaryConfig');
 const fs = require('fs');
+const { incrementTotalDocument, decrementTotalDocument } = require('../middlewares/libraryMiddleware');
 
 // Upload a new Document
 exports.uploadDocument = async (req, res) => {
@@ -27,6 +28,8 @@ exports.uploadDocument = async (req, res) => {
     });
 
     await newDocument.save();
+
+    await incrementTotalDocument()
 
     res.status(201).json({ message: 'Document uploaded successfully', document: newDocument });
   } catch (error) {
@@ -116,6 +119,8 @@ exports.deleteDocumentById = async (req, res) => {
     // Delete the document from the database
     await Document.findByIdAndDelete(documentId);
 
+    await decrementTotalDocument()
+    
     res.status(200).json({ message: 'Document deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete document', details: error.message });

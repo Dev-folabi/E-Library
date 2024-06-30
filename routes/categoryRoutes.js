@@ -2,10 +2,9 @@ const express = require('express');
 const router = express.Router();
 const { createCategory, getAllCategories, updateCategoryById, deleteCategoryById, getCategoryById } = require('../controllers/categoryController');
 const { authorize } = require('../middlewares/auth');
-const { incrementTotalCategory, decrementTotalCategory } = require('../middlewares/libraryMiddleware');
 
 // Create a new category
-router.post('/',  authorize('Admin'), incrementTotalCategory, createCategory);
+router.post('/',  authorize('Admin'), createCategory);
 
 // Get all categories
 router.get('/',  getAllCategories);
@@ -17,6 +16,6 @@ router.get('/:id',  getCategoryById);
 router.put('/:id', authorize('Admin'), updateCategoryById);
 
 // Delete a category by ID
-router.delete('/:id', authorize('Admin'), decrementTotalCategory, deleteCategoryById);
+router.delete('/:id', authorize('Admin'), deleteCategoryById);
 
 module.exports = router;

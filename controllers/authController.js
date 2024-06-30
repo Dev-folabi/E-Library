@@ -3,11 +3,12 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const _ = require("lodash");
 const {
-    adminSignupSchema,
-    userSignupSchema,
-    adminLoginSchema,
-    userLoginSchema
+  adminSignupSchema,
+  userSignupSchema,
+  adminLoginSchema,
+  userLoginSchema,
 } = require("../config/validation");
+const { incrementTotalUser } = require("../middlewares/libraryMiddleware");
 
 // Admin Signup
 exports.adminSignup = async (req, res) => {
@@ -17,12 +18,15 @@ exports.adminSignup = async (req, res) => {
   const { name, email, password, role, gender } = req.body;
 
   try {
-    
     let admin = await Admin.findOne({ email });
     if (admin) return res.status(400).json({ msg: "Admin already exists" });
 
     admin = new Admin({
-        name, email, password, role, gender
+      name,
+      email,
+      password,
+      role,
+      gender,
     });
     await admin.save();
 
@@ -50,21 +54,26 @@ exports.userSignup = async (req, res) => {
   const { name, email, password, role, gender, phone } = req.body;
 
   try {
-
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ msg: "User already exists" });
 
     user = new User({
-        name, email, password, role, gender, phone
+      name,
+      email,
+      password,
+      role,
+      gender,
+      phone,
     });
     await user.save();
 
-    
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_PRIVATE_KEY,
       { expiresIn: "1d" }
     );
+
+    await incrementTotalUser();
 
     res.status(201).json({
       msg: "User signed up successfully",
@@ -113,7 +122,7 @@ exports.userLogin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email });
     if (!user || !(await user.matchPassword(password))) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
@@ -134,4 +143,3 @@ exports.userLogin = async (req, res) => {
     res.status(500).json({ msg: "Server error, please try again later." });
   }
 };
-

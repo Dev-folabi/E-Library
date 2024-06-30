@@ -1,3 +1,4 @@
+const { incrementTotalCategory, decrementTotalCategory } = require('../middlewares/libraryMiddleware');
 const Category = require('../models/categoryModel');
 
 // Create a new category
@@ -8,6 +9,9 @@ exports.createCategory = async (req, res) => {
 
     const newCategory = new Category({ name });
     await newCategory.save();
+
+    await incrementTotalCategory()
+
     res.status(201).json({ message: 'Category created successfully', category: newCategory });
   } catch (error) {
     res.status(500).json({ error: 'Failed to create category' });
@@ -69,6 +73,9 @@ exports.deleteCategoryById = async (req, res) => {
     if (!category) {
       return res.status(404).json({ error: 'Category not found' });
     }
+
+   await decrementTotalCategory()
+    
     res.status(200).json({ message: 'Category deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete category' });

@@ -1,6 +1,6 @@
 const express = require('express');
 const { adminSignup, AdminLogin, userSignup, userLogin, } = require('../controllers/authController');
-const { incrementTotalUser } = require('../middlewares/libraryMiddleware');
+
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ router.post('/admin-login', AdminLogin);
 
 
 // User Routes
-router.post('/user-signup', incrementTotalUser, userSignup);
+router.post('/user-signup', userSignup);
 router.post('/user-login', userLogin);
 
 

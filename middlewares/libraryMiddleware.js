@@ -6,7 +6,7 @@ exports.incrementTotalUser = async (req, res, next) => {
     await Library.updateOne({}, { $inc: { totalUser: 1 } }, { upsert: true });
     next();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update total user count' });
+    res.status(500).json({ error: 'Failed to update total user count', details: error.message });
   }
 };
 
@@ -16,7 +16,7 @@ exports.decrementTotalUser = async (req, res, next) => {
     await Library.updateOne({}, { $inc: { totalUser: -1 } });
     next();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update total user count' });
+    res.status(500).json({ error: 'Failed to update total user count', details: error.message });
   }
 };
 
@@ -26,7 +26,7 @@ exports.incrementTotalDocument = async (req, res, next) => {
     await Library.updateOne({}, { $inc: { totalDocument: 1 } }, { upsert: true });
     next();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update total document count' });
+    res.status(500).json({ error: 'Failed to update total document count', details: error.message });
   }
 };
 
@@ -36,26 +36,26 @@ exports.decrementTotalDocument = async (req, res, next) => {
     await Library.updateOne({}, { $inc: { totalDocument: -1 } });
     next();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update total document count' });
+    res.status(500).json({ error: 'Failed to update total document count', details: error.message });
   }
 };
 
 // Middleware to increment the total category count
 exports.incrementTotalCategory = async (req, res, next) => {
   try {
-    await Library.updateOne({}, { $inc: { totalCategroy: 1 } }, { upsert: true });
+    await Library.updateOne({}, { $inc: { totalCategory: 1 } }, { upsert: true });
     next();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update total category count' });
+    res.status(500).json({ error: 'Failed to update total category count', details: error.message });
   }
 };
 
 // Middleware to decrement the total category count
 exports.decrementTotalCategory = async (req, res, next) => {
   try {
-    await Library.updateOne({}, { $inc: { totalCategroy: -1 } });
+    await Library.updateOne({}, { $inc: { totalCategory: -1 } });
     next();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update total category count' });
+    res.status(500).json({ error: 'Failed to update total category count', details: error.message });
   }
 };
