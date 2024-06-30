@@ -10,7 +10,7 @@ const deleteFile = (path) => {
 };
 
 // Upload a new Document
-exports.uploadDocument = async (req, res) => {
+exports.uploadDocument = async (req, res, next) => {
   try {
     const { title, code, category } = req.body;
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
@@ -36,7 +36,7 @@ exports.uploadDocument = async (req, res) => {
 
     await newDocument.save();
 
-    await incrementTotalDocument();
+    await incrementTotalDocument(req, res, next);
 
     res.status(201).json({ message: 'Document uploaded successfully', document: newDocument });
   } catch (error) {
@@ -109,7 +109,7 @@ exports.updateDocumentById = async (req, res) => {
 };
 
 // Delete a Document by ID
-exports.deleteDocumentById = async (req, res) => {
+exports.deleteDocumentById = async (req, res, next) => {
   try {
     const documentId = req.params.id;
 
@@ -126,7 +126,7 @@ exports.deleteDocumentById = async (req, res) => {
     // Delete the document from the database
     await Document.findByIdAndDelete(documentId);
 
-    await decrementTotalDocument();
+    await decrementTotalDocument(req, res, next);
 
     res.status(200).json({ message: 'Document deleted successfully' });
   } catch (error) {
