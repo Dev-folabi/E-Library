@@ -29,7 +29,7 @@ exports.uploadDocument = async (req, res) => {
 
     await newDocument.save();
 
-    await incrementTotalDocument()
+    incrementTotalDocument()
 
     res.status(201).json({ message: 'Document uploaded successfully', document: newDocument });
   } catch (error) {
@@ -119,7 +119,7 @@ exports.deleteDocumentById = async (req, res) => {
     // Delete the document from the database
     await Document.findByIdAndDelete(documentId);
 
-    await decrementTotalDocument()
+    decrementTotalDocument()
     
     res.status(200).json({ message: 'Document deleted successfully' });
   } catch (error) {

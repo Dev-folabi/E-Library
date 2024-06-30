@@ -10,7 +10,7 @@ exports.createCategory = async (req, res) => {
     const newCategory = new Category({ name });
     await newCategory.save();
 
-    await incrementTotalCategory()
+    incrementTotalCategory()
 
     res.status(201).json({ message: 'Category created successfully', category: newCategory });
   } catch (error) {
@@ -74,7 +74,7 @@ exports.deleteCategoryById = async (req, res) => {
       return res.status(404).json({ error: 'Category not found' });
     }
 
-   await decrementTotalCategory()
+   decrementTotalCategory()
     
     res.status(200).json({ message: 'Category deleted successfully' });
   } catch (error) {
