@@ -6,9 +6,7 @@ const {
     adminSignupSchema,
     userSignupSchema,
     adminLoginSchema,
-    userLoginSchema,
-    updateAdminSchema,
-    updateUserSchema
+    userLoginSchema
 } = require("../config/validation");
 
 // Admin Signup

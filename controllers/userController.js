@@ -1,7 +1,8 @@
 const User = require('../models/userModel');
 const Library = require('../models/libraryModel');
+const { updateUserSchema } = require('../config/validation');
 
-// User Dashboard
+// Get User Dashboard
 exports.getUserDashboard = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).populate('acceessedDocuments.document');
@@ -14,7 +15,7 @@ exports.getUserDashboard = async (req, res) => {
   }
 };
 
-// User Profile
+// Get User Profile
 exports.getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -29,6 +30,8 @@ exports.getUserProfile = async (req, res) => {
 
 // Update User Profile
 exports.updateUserProfile = async (req, res) => {
+  const { error } = updateUserSchema.validate(req.body);
+  if (error) return res.status(400).json({ msg: error.details[0].message });
   try {
     const { name, email, gender, phone } = req.body;
     const user = await User.findByIdAndUpdate(

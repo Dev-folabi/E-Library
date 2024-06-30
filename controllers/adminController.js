@@ -1,7 +1,8 @@
 const User = require('../models/userModel');
 const Library = require('../models/libraryModel');
+const { updateAdminSchema } = require('../config/validation');
 
-// Admin Dashboard
+// Get Admin Dashboard
 exports.getAdminDashboard = async (req, res) => {
   try {
     const libraryStats = await Library.findOne();
@@ -11,7 +12,7 @@ exports.getAdminDashboard = async (req, res) => {
   }
 };
 
-// Admin Profile
+// Get Admin Profile
 exports.getAdminProfile = async (req, res) => {
   try {
     const admin = await User.findById(req.user.id);
@@ -26,6 +27,8 @@ exports.getAdminProfile = async (req, res) => {
 
 // Update Admin Profile
 exports.updateAdminProfile = async (req, res) => {
+  const { error } = updateAdminSchema.validate(req.body);
+  if (error) return res.status(400).json({ msg: error.details[0].message });
   try {
     const { name, email, gender, phone } = req.body;
     const admin = await User.findByIdAndUpdate(
