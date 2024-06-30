@@ -134,11 +134,13 @@ exports.deleteDocumentById = async (req, res, next) => {
   }
 };
 
-// Get Documents by category
+//  Get Document By Category
 exports.getDocumentsByCategory = async (req, res) => {
   try {
-    const { category } = req.params;
-    const documents = await Document.find({ category: category });
+    const category = req.params.category;
+    const regex = new RegExp(category, 'i'); // 'i' makes it case-insensitive
+    const documents = await Document.find({ category: { $regex: regex } });
+
     if (!documents || documents.length === 0) {
       return res.status(404).json({ error: 'No documents found for the specified category' });
     }
@@ -147,6 +149,7 @@ exports.getDocumentsByCategory = async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve documents', details: error.message });
   }
 };
+
 
 
 // Filter Documents by query
