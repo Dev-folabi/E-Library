@@ -5,6 +5,16 @@ const { uploadDocument, getDocumentById, updateDocumentById, deleteDocumentById,
 const { authorize } = require('../middlewares/auth');
 const { dir } = require('../middlewares/uploadDirctoryMiddleware');
 
+
+// Search documents
+router.get('/search', searchDocuments);
+
+// Get the latest 30 documents
+router.get('/latest', getLatestDocuments);
+
+// Get random 30 documents
+router.get('/random', getRandomDocuments);
+
 // Upload a new document
 router.post('/upload', authorize('Admin'),  dir, upload.single('document'), uploadDocument);
 
@@ -19,14 +29,5 @@ router.delete('/:id', authorize('Admin'), deleteDocumentById);
 
 // Get documents by category
 router.get('/category/:category', getDocumentsByCategory);
-
-// Search documents
-router.get('/search', searchDocuments);
-
-// Get the latest 30 documents
-router.get('/latest', getLatestDocuments);
-
-// Get random 30 documents
-router.get('/random', getRandomDocuments);
 
 module.exports = router;
