@@ -1,6 +1,7 @@
-const User = require('../models/userModel');
+const Admin = require('../models/adminModel');
 const Library = require('../models/libraryModel');
 const { updateAdminSchema } = require('../config/validation');
+
 
 // Get Admin Dashboard
 exports.getAdminDashboard = async (req, res) => {
@@ -15,13 +16,13 @@ exports.getAdminDashboard = async (req, res) => {
 // Get Admin Profile
 exports.getAdminProfile = async (req, res) => {
   try {
-    const admin = await User.findById(req.user._id);
+    const admin = await Admin.findById(req.user.id);
     if (!admin) {
       return res.status(404).json({ error: 'Admin not found' });
     }
     res.status(200).json(admin);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve admin profile', details: error.message });
+    res.status(500).json({ Message: 'Failed to retrieve Admin profile', Error: error.message });
   }
 };
 
@@ -31,7 +32,7 @@ exports.updateAdminProfile = async (req, res) => {
   if (error) return res.status(400).json({ msg: error.details[0].message });
   try {
     const { name, email, gender, phone } = req.body;
-    const admin = await User.findByIdAndUpdate(
+    const admin = await Admin.findByIdAndUpdate(
       req.user.id,
       { name, email, gender, phone },
       { new: true }
