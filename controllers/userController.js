@@ -5,15 +5,23 @@ const { updateUserSchema } = require('../config/validation');
 // Get User Dashboard
 exports.getUserDashboard = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).populate('acceessedDocuments.document');
+    const user = await User.findById(req.user.id).populate('accessedDocuments.document');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    res.status(200).json({ accessedDocuments: user.acceessedDocuments, totalReading: user.totalReading, totalDownload: user.totalDownload });
+    res.status(200).json({
+      accessedDocuments: user.accessedDocuments,
+      totalReading: user.totalReading,
+      totalDownload: user.totalDownload,
+    });
   } catch (error) {
-    res.status(500).json({ Message: 'Failed to retrieve user dashboard data', Error: error.message });
+    res.status(500).json({
+      message: 'Failed to retrieve user dashboard data',
+      error: error.message,
+    });
   }
 };
+
 
 // Get User Profile
 exports.getUserProfile = async (req, res) => {
