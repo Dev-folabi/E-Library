@@ -140,31 +140,15 @@ exports.deleteDocumentById = async (req, res, next) => {
 exports.getDocumentsByCategory = async (req, res) => {
   try {
     const category = req.params.category;
-    const regex = new RegExp(category, 'i'); // 'i' makes it case-insensitive
+    const regex = new RegExp(category, 'i'); 
     const documents = await Document.find({ category: { $regex: regex } });
 
     if (!documents || documents.length === 0) {
-      return res.status(404).json({ error: 'No documents found for the specified category' });
+      return res.status(204).json(`No documents found for ${category} category`);
     }
     res.status(200).json(documents);
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve documents', details: error.message });
-  }
-};
-
-
-
-// Filter Documents by query
-exports.filterDocuments = async (req, res) => {
-  try {
-    const filter = req.query;
-    const documents = await Document.find(filter);
-    if (!documents || documents.length === 0) {
-      return res.status(404).json({ error: 'No documents found matching the specified criteria' });
-    }
-    res.status(200).json(documents);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to filter documents', details: error.message });
   }
 };
 
@@ -179,14 +163,15 @@ exports.searchDocuments = async (req, res) => {
         { category: { $regex: query, $options: 'i' } }
       ]
     });
-    if (!documents || documents.length === 0) {
-      return res.status(404).json({ error: 'No documents found matching the search criteria' });
+    if (!documents.length) {
+      return res.status(404).json({ error: `No documents found matching the search: ${query}` });
     }
     res.status(200).json(documents);
   } catch (error) {
     res.status(500).json({ error: 'Failed to search documents', details: error.message });
   }
 };
+
 
 // Get the latest 30 documents
 exports.getLatestDocuments = async (req, res) => {

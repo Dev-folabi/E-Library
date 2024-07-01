@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const upload = require('../config/multer');
-const { uploadDocument, getDocumentById, updateDocumentById, deleteDocumentById, getDocumentsByCategory, filterDocuments, searchDocuments, getRandomDocuments, getLatestDocuments } = require('../controllers/documentController');
+const { uploadDocument, getDocumentById, updateDocumentById, deleteDocumentById, getDocumentsByCategory, searchDocuments, getRandomDocuments, getLatestDocuments } = require('../controllers/documentController');
 const { authorize } = require('../middlewares/auth');
 const { dir } = require('../middlewares/uploadDirctoryMiddleware');
 
@@ -19,9 +19,6 @@ router.delete('/:id', authorize('Admin'), deleteDocumentById);
 
 // Get documents by category
 router.get('/category/:category', getDocumentsByCategory);
-
-// Filter documents by query parameters
-router.get('/', filterDocuments);
 
 // Search documents
 router.get('/search', searchDocuments);
