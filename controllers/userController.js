@@ -11,7 +11,7 @@ exports.getUserDashboard = async (req, res) => {
     }
     res.status(200).json({ accessedDocuments: user.acceessedDocuments, totalReading: user.totalReading, totalDownload: user.totalDownload });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve user dashboard data' });
+    res.status(500).json({ Message: 'Failed to retrieve user dashboard data', Error: error.message });
   }
 };
 
@@ -24,7 +24,7 @@ exports.getUserProfile = async (req, res) => {
     }
     res.status(200).json(user);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve user profile' });
+    res.status(500).json({ Message: 'Failed to retrieve user profile', Error: error.message });
   }
 };
 
@@ -44,6 +44,6 @@ exports.updateUserProfile = async (req, res) => {
     }
     res.status(200).json({ message: 'Profile updated successfully', user });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update user profile' });
+    res.status(500).json({ Message: 'Failed to update user profile', Error: error.message });
   }
 };
