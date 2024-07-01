@@ -12,7 +12,7 @@ const deleteFile = (path) => {
 // Upload a new Document
 exports.uploadDocument = async (req, res, next) => {
   try {
-    const { title, code, category } = req.body;
+    const { title, code, category, cover, description } = req.body;
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
     // Upload the file to Cloudinary
@@ -31,7 +31,9 @@ exports.uploadDocument = async (req, res, next) => {
       document: result.secure_url,
       documentPublicId: result.public_id,
       code,
-      category
+      category,
+      cover,
+      description
     });
 
     await newDocument.save();
@@ -63,7 +65,7 @@ exports.getDocumentById = async (req, res) => {
 // Update a Document by ID
 exports.updateDocumentById = async (req, res) => {
   try {
-    const { title, code, category } = req.body;
+    const { title, code, category, cover, description } = req.body;
     const documentId = req.params.id;
 
     // Find the document to get the current Cloudinary public ID
@@ -72,7 +74,7 @@ exports.updateDocumentById = async (req, res) => {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    const updatedData = { title, code, category };
+    const updatedData = { title, code, category, cover, description };
 
     if (req.file) {
       // Delete the old file from Cloudinary
