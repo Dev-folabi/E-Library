@@ -15,7 +15,7 @@ exports.getAdminDashboard = async (req, res) => {
 // Get Admin Profile
 exports.getAdminProfile = async (req, res) => {
   try {
-    const admin = await User.findById(req.user.id);
+    const admin = await User.findById(req.user._id);
     if (!admin) {
       return res.status(404).json({ error: 'Admin not found' });
     }
