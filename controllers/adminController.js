@@ -21,7 +21,7 @@ exports.getAdminProfile = async (req, res) => {
     }
     res.status(200).json(admin);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve admin profile' });
+    res.status(500).json({ error: 'Failed to retrieve admin profile', details: error.message });
   }
 };
 

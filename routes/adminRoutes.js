@@ -8,6 +8,8 @@ router.get('/dashboard', authorize('Admin'), getAdminDashboard);
 
 // Admin Profile
 router.get('/profile', authorize('Admin'), getAdminProfile);
+
+// Update Profile 
 router.put('/profile', authorize('Admin'), updateAdminProfile);
 
 module.exports = router;
