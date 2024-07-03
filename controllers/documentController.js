@@ -44,7 +44,7 @@ exports.uploadDocument = async (req, res) => {
 
     await incrementTotalDocument();
 
-    res.status(201).json({ result: result, message: 'Document uploaded successfully', document: newDocument });
+    res.status(201).json({ message: 'Document uploaded successfully', document: newDocument });
   } catch (error) {
     if (req.file) {
       deleteFile(req.file.path);
