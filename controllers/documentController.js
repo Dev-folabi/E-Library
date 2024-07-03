@@ -5,12 +5,16 @@ const { incrementTotalDocument, decrementTotalDocument } = require('../middlewar
 
 const deleteFile = (path) => {
   if (fs.existsSync(path)) {
-    fs.unlinkSync(path);
+    try {
+      fs.unlinkSync(path);
+    } catch (err) {
+      console.error(`Failed to delete file at ${path}:`, err);
+    }
   }
 };
 
 // Upload a new Document
-exports.uploadDocument = async (req, res, next) => {
+exports.uploadDocument = async (req, res) => {
   try {
     const { title, code, category, cover, description } = req.body;
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
@@ -22,7 +26,6 @@ exports.uploadDocument = async (req, res, next) => {
       use_filename: true,
       unique_filename: false
     });
-
 
     // Remove file from server after upload
     deleteFile(req.file.path);
@@ -39,9 +42,9 @@ exports.uploadDocument = async (req, res, next) => {
 
     await newDocument.save();
 
-     await incrementTotalDocument();
+    await incrementTotalDocument();
 
-    res.status(201).json({result: result, message: 'Document uploaded successfully', document: newDocument });
+    res.status(201).json({ result: result, message: 'Document uploaded successfully', document: newDocument });
   } catch (error) {
     if (req.file) {
       deleteFile(req.file.path);
@@ -84,7 +87,7 @@ exports.updateDocumentById = async (req, res) => {
 
       // Upload the new file to Cloudinary
       const result = await cloudinary.uploader.upload(req.file.path, {
-        resource_type: 'auto',
+        resource_type: 'raw',
         folder: 'documents',
         use_filename: true,
         unique_filename: false
@@ -107,12 +110,12 @@ exports.updateDocumentById = async (req, res) => {
     if (req.file) {
       deleteFile(req.file.path);
     }
-    res.status500().json({ error: 'Failed to update document', details: error.message });
+    res.status(500).json({ error: 'Failed to update document', details: error.message });
   }
 };
 
 // Delete a Document by ID
-exports.deleteDocumentById = async (req, res, next) => {
+exports.deleteDocumentById = async (req, res) => {
   try {
     const documentId = req.params.id;
 
@@ -137,7 +140,7 @@ exports.deleteDocumentById = async (req, res, next) => {
   }
 };
 
-//  Get Document By Category
+// Get Documents by Category
 exports.getDocumentsByCategory = async (req, res) => {
   try {
     const category = req.params.category;
@@ -145,7 +148,7 @@ exports.getDocumentsByCategory = async (req, res) => {
     const documents = await Document.find({ category: { $regex: regex } });
 
     if (!documents || documents.length === 0) {
-      return res.status(404).json({message: `No documents found for ${category} category`});
+      return res.status(404).json({ message: `No documents found for ${category} category` });
     }
     res.status(200).json(documents);
   } catch (error) {
@@ -172,7 +175,6 @@ exports.searchDocuments = async (req, res) => {
     res.status(500).json({ error: 'Failed to search documents', details: error.message });
   }
 };
-
 
 // Get the latest 30 documents
 exports.getLatestDocuments = async (req, res) => {
