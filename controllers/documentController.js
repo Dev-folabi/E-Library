@@ -17,11 +17,12 @@ exports.uploadDocument = async (req, res, next) => {
 
     // Upload the file to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
-      resource_type: 'auto',
+      resource_type: 'raw',
       folder: 'documents',
       use_filename: true,
       unique_filename: false
     });
+
 
     // Remove file from server after upload
     deleteFile(req.file.path);
@@ -40,7 +41,7 @@ exports.uploadDocument = async (req, res, next) => {
 
      await incrementTotalDocument();
 
-    res.status(201).json({ message: 'Document uploaded successfully', document: newDocument });
+    res.status(201).json({result: result, message: 'Document uploaded successfully', document: newDocument });
   } catch (error) {
     if (req.file) {
       deleteFile(req.file.path);
