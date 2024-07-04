@@ -3,6 +3,7 @@ const cloudinary = require('../config/cloudinaryConfig');
 const fs = require('fs');
 const { incrementTotalDocument, decrementTotalDocument } = require('../middlewares/libraryMiddleware');
 
+// Delete file from cloudinary
 const deleteFile = (path) => {
   if (fs.existsSync(path)) {
     try {
@@ -13,10 +14,20 @@ const deleteFile = (path) => {
   }
 };
 
+// Function to generate a random color
+function getRandomColor() {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
+
 // Upload a new Document
 exports.uploadDocument = async (req, res) => {
   try {
-    const { title, code, category, cover, description } = req.body;
+    const { title, code, category,  description } = req.body;
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
     // Upload the file to Cloudinary
@@ -30,13 +41,15 @@ exports.uploadDocument = async (req, res) => {
     // Remove file from server after upload
     deleteFile(req.file.path);
 
+    const coverColour = getRandomColor()
+
     const newDocument = new Document({
       title,
       document: result.secure_url,
       documentPublicId: result.public_id,
       code,
       category,
-      cover,
+      cover : coverColour,
       description
     });
 
@@ -69,7 +82,7 @@ exports.getDocumentById = async (req, res) => {
 // Update a Document by ID
 exports.updateDocumentById = async (req, res) => {
   try {
-    const { title, code, category, cover, description } = req.body;
+    const { title, code, category, description } = req.body;
     const documentId = req.params.id;
 
     // Find the document to get the current Cloudinary public ID
@@ -78,7 +91,7 @@ exports.updateDocumentById = async (req, res) => {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    const updatedData = { title, code, category, cover, description };
+    const updatedData = { title, code, category, description };
 
     if (req.file) {
       // Delete the old file from Cloudinary
