@@ -3,7 +3,7 @@ const cloudinary = require('../config/cloudinaryConfig');
 const fs = require('fs');
 const { incrementTotalDocument, decrementTotalDocument } = require('../middlewares/libraryMiddleware');
 
-// Delete file from cloudinary
+// Delete file from sever after upload
 const deleteFile = (path) => {
   if (fs.existsSync(path)) {
     try {
