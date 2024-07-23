@@ -5,6 +5,7 @@ const documentSchema = new mongoose.Schema({
   document: { type: String, required: true },
   documentPublicId: { type: String, required: true },
   code: { type: String },
+  level: { type: String },
   category: [{ type: String }],
   cover: { type: String },
   description: { type: String },

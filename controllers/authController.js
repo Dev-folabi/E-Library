@@ -49,12 +49,19 @@ exports.adminSignup = async (req, res) => {
 // User Signup
 exports.userSignup = async (req, res) => {
   const { error } = userSignupSchema.validate(req.body);
-  if (error) return res.status(400).json({ msg: error.details[0].message });
+  if (error) {
+    if (error.details[0].context.key === 'matric') {
+      return res.status(400).json({ msg: "The library is for Edutech only" });
+    }
+    return res.status(400).json({ msg: error.details[0].message });
+  }
 
-  const { name, email, password, role, gender, phone } = req.body;
+  const { name, email, password, role, matric, gender, phone } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    let user = await User.findOne({
+      $or: [{ email: email }, { matric: matric }],
+    });
     if (user) return res.status(400).json({ msg: "User already exists" });
 
     user = new User({
@@ -62,6 +69,7 @@ exports.userSignup = async (req, res) => {
       email,
       password,
       role,
+      matric,
       gender,
       phone,
     });
@@ -117,12 +125,19 @@ exports.AdminLogin = async (req, res) => {
 // user Login
 exports.userLogin = async (req, res) => {
   const { error } = userLoginSchema.validate(req.body);
-  if (error) return res.status(400).json({ msg: error.details[0].message });
+  if (error) {
+    if (error.details[0].context.key === 'emailOrMatric') {
+      return res.status(400).json({ msg: "The library is for Edutech only" });
+    }
+    return res.status(400).json({ msg: error.details[0].message });
+  }
 
-  const { email, password } = req.body;
+  const { emailOrMatric, password } = req.body;
 
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({
+      $or: [{ email: emailOrMatric }, { matric: emailOrMatric }],
+    });
     if (!user || !(await user.matchPassword(password))) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
@@ -136,10 +151,16 @@ exports.userLogin = async (req, res) => {
     res.status(200).json({
       msg: "User logged in successfully",
       token,
-      admin: _.omit(user.toObject(), ["password", "__v"]),
+      user: _.omit(user.toObject(), ["password", "__v"]),
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Server error, please try again later." });
   }
 };
+
+// Delete Admin
+exports.deleteAdmin = async (req, res ) =>{
+    await Admin.findByIdAndDelete(req.user._id)
+    res.status(200)
+}

@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, index: true },
   password: { type: String, required: true },
   role: { type: String, default: 'User' },
+  matric: { type: String, required: true, unique: true, match: /^[0-9]{2}\/[0-9]{2}(PC|PJ|PL)[0-9]{3}$/ },
   gender: { type: String },
   phone: { type: String },
   accessedDocuments: [accessedDocumentSchema],

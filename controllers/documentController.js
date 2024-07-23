@@ -27,7 +27,7 @@ function getRandomColor() {
 // Upload a new Document
 exports.uploadDocument = async (req, res) => {
   try {
-    const { title, code, category,  description } = req.body;
+    const { title, code, category, level, description } = req.body;
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
     // Upload the file to Cloudinary
@@ -48,6 +48,7 @@ exports.uploadDocument = async (req, res) => {
       document: result.secure_url,
       documentPublicId: result.public_id,
       code,
+      level,
       category,
       cover : coverColour,
       description
@@ -82,7 +83,7 @@ exports.getDocumentById = async (req, res) => {
 // Update a Document by ID
 exports.updateDocumentById = async (req, res) => {
   try {
-    const { title, code, category, description } = req.body;
+    const { title, code, level, category, description } = req.body;
     const documentId = req.params.id;
 
     // Find the document to get the current Cloudinary public ID
@@ -91,7 +92,7 @@ exports.updateDocumentById = async (req, res) => {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    const updatedData = { title, code, category, description };
+    const updatedData = { title, code, level, category, description };
 
     if (req.file) {
       // Delete the old file from Cloudinary
@@ -169,6 +170,22 @@ exports.getDocumentsByCategory = async (req, res) => {
   }
 };
 
+// Get Documents by Level
+// exports.getDocumentsByLevel= async (req, res) => {
+//   try {
+//     const level = req.params.level;
+//     const regex = new RegExp(level, 'i'); 
+//     const documents = await Document.find({ category: { $regex: regex } });
+
+//     if (!documents || documents.length === 0) {
+//       return res.status(404).json({ message: `No documents found for ${level} level` });
+//     }
+//     res.status(200).json(documents);
+//   } catch (error) {
+//     res.status(500).json({ error: 'Failed to retrieve documents', details: error.message });
+//   }
+// };
+
 // Search Documents
 exports.searchDocuments = async (req, res) => {
   try {
@@ -177,7 +194,8 @@ exports.searchDocuments = async (req, res) => {
       $or: [
         { title: { $regex: query, $options: 'i' } },
         { code: { $regex: query, $options: 'i' } },
-        { category: { $regex: query, $options: 'i' } }
+        { category: { $regex: query, $options: 'i' } },
+        { level: { $regex: query, $options: 'i' } }
       ]
     });
     if (!documents.length) {

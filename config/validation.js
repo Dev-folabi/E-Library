@@ -13,9 +13,10 @@ const userSignupSchema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
     role: Joi.string().valid('User'),
-    gender: Joi.string().valid('Male', 'Female', 'other').required(),
+    matric: Joi.string().pattern(/^[0-9]{2}\/[0-9]{2}(PC|PJ|PL)[0-9]{3}$/).required(),
+    gender: Joi.string().valid('Male', 'Female', 'Other').required(),
     phone: Joi.string().pattern(/^[0-9]{10,15}$/).optional()
-});
+  });
 
 const adminLoginSchema = Joi.object({
     email: Joi.string().email().required(),
@@ -23,7 +24,7 @@ const adminLoginSchema = Joi.object({
 });
 
 const userLoginSchema = Joi.object({
-    email: Joi.string().required(),
+    emailOrMatric: Joi.string().required(),
     password: Joi.string().required()
 });
 
