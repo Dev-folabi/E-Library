@@ -159,14 +159,13 @@ exports.userLogin = async (req, res) => {
   }
 };
 
-// Delete Admin
-exports.deleteAdmin = async (req, res ) =>{
 
-  try{
-    await Admin.findByIdAndDelete(req.user._id)
-    res.status(200)
-  } catch(err){
-    res.status(400).json({msg:"Server error, please try again later.", err})
+// Delete Admin
+exports.deleteAdmin = async (req, res) => {
+  try {
+    await Admin.findByIdAndDelete(req.user._id);
+    res.status(200).json({ msg: "Admin deleted successfully." });
+  } catch (err) {
+    res.status(400).json({ msg: "Server error, please try again later.", err });
   }
-  
 }
