@@ -2,7 +2,12 @@ const Joi = require('joi');
 
 const adminSignupSchema = Joi.object({
     name: Joi.string().min(3).required(),
-    email: Joi.string().email().required(),
+    email: Joi.string().email().required().custom((value, helper) => {
+        if (!value.endsWith('@staff.unilorin.edu.ng')) {
+            return helper.message('The library is for University of Ilorin only');
+        }
+        return value;
+    }),
     password: Joi.string().min(6).required(),
     role: Joi.string().valid('Admin'),
     gender: Joi.string().valid('Male', 'Female', 'other').required()
@@ -10,10 +15,15 @@ const adminSignupSchema = Joi.object({
 
 const userSignupSchema = Joi.object({
     name: Joi.string().min(3).required(),
-    email: Joi.string().email().required(),
+    email: Joi.string().email().required().custom((value, helper) => {
+        if (!value.endsWith('@students.unilorin.edu.ng')) {
+            return helper.message('The library is for University of Ilorin only');
+        }
+        return value;
+    }),
     password: Joi.string().min(6).required(),
     role: Joi.string().valid('User'),
-    matric: Joi.string().pattern(/^[0-9]{2}\/[0-9]{2}(PC|PJ|PL)[0-9]{3}$/).required(),
+    matric: Joi.string().required(),
     gender: Joi.string().valid('Male', 'Female', 'Other').required(),
     phone: Joi.string().pattern(/^[0-9]{10,15}$/).optional()
   });
@@ -29,15 +39,25 @@ const userLoginSchema = Joi.object({
 });
 
 const updateAdminSchema = Joi.object({
-    name: Joi.string().min(3).required(),
-    email: Joi.string().email().required(),
+    name: Joi.string().min(3).required().optional(),
+    email: Joi.string().email().optional().custom((value, helper) => {
+        if (!value.endsWith('@students.unilorin.edu.ng')) {
+            return helper.message('The library is for University of Ilorin students only');
+        }
+        return value;
+    }),
     gender: Joi.string().valid('Male', 'Female', 'other').required()
 });
 
 const updateUserSchema = Joi.object({
-    name: Joi.string().min(3).required(),
-    email: Joi.string().email().required(),
-    gender: Joi.string().valid('Male', 'Female', 'other').required(),
+    name: Joi.string().min(3).optional(),
+    email: Joi.string().email().optional().custom((value, helper) => {
+        if (!value.endsWith('@students.unilorin.edu.ng')) {
+            return helper.message('The library is for University of Ilorin students only');
+        }
+        return value;
+    }),
+    gender: Joi.string().valid('Male', 'Female', 'other').optional(),
     phone: Joi.string().pattern(/^[0-9]{10,15}$/).optional(),
 });
 

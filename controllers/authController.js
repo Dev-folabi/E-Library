@@ -50,9 +50,9 @@ exports.adminSignup = async (req, res) => {
 exports.userSignup = async (req, res) => {
   const { error } = userSignupSchema.validate(req.body);
   if (error) {
-    if (error.details[0].context.key === 'matric') {
-      return res.status(400).json({ msg: "The library is for Edutech only" });
-    }
+    // if (error.details[0].context.key === 'matric') {
+    //   return res.status(400).json({ msg: "The library is for Edutech only" });
+    // }
     return res.status(400).json({ msg: error.details[0].message });
   }
 
@@ -142,6 +142,10 @@ exports.userLogin = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
+    if (emailOrMatric.includes('@') && !emailOrMatric.endsWith('@students.unilorin.edu.ng')) {
+      return res.status(400).json({ msg: "The library is for University of Ilorin students only" });
+    }
+    
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_PRIVATE_KEY,
