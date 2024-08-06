@@ -49,12 +49,7 @@ exports.adminSignup = async (req, res) => {
 // User Signup
 exports.userSignup = async (req, res) => {
   const { error } = userSignupSchema.validate(req.body);
-  if (error) {
-    // if (error.details[0].context.key === 'matric') {
-    //   return res.status(400).json({ msg: "The library is for Edutech only" });
-    // }
-    return res.status(400).json({ msg: error.details[0].message });
-  }
+  if (error) return res.status(400).json({ msg: error.details[0].message });
 
   const { name, email, password, role, matric, gender, phone } = req.body;
 
@@ -106,6 +101,10 @@ exports.AdminLogin = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
+    if (email.includes('@') && !email.endsWith('@unilorin.edu.ng')) {
+      return res.status(400).json({ msg: "The library is for University of Ilorin students only" });
+    }
+
     const token = jwt.sign(
       { id: admin._id, role: admin.role },
       process.env.JWT_PRIVATE_KEY,
@@ -125,12 +124,8 @@ exports.AdminLogin = async (req, res) => {
 // user Login
 exports.userLogin = async (req, res) => {
   const { error } = userLoginSchema.validate(req.body);
-  if (error) {
-    if (error.details[0].context.key === 'emailOrMatric') {
-      return res.status(400).json({ msg: "The library is for Edutech only" });
-    }
-    return res.status(400).json({ msg: error.details[0].message });
-  }
+  if (error) return res.status(400).json({ msg: error.details[0].message });
+  
 
   const { emailOrMatric, password } = req.body;
 
@@ -145,7 +140,7 @@ exports.userLogin = async (req, res) => {
     if (emailOrMatric.includes('@') && !emailOrMatric.endsWith('@students.unilorin.edu.ng')) {
       return res.status(400).json({ msg: "The library is for University of Ilorin students only" });
     }
-    
+
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_PRIVATE_KEY,

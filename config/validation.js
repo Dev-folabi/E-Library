@@ -3,7 +3,7 @@ const Joi = require('joi');
 const adminSignupSchema = Joi.object({
     name: Joi.string().min(3).required(),
     email: Joi.string().email().required().custom((value, helper) => {
-        if (!value.endsWith('@staff.unilorin.edu.ng')) {
+        if (!value.endsWith('@unilorin.edu.ng')) {
             return helper.message('The library is for University of Ilorin only');
         }
         return value;
@@ -41,7 +41,7 @@ const userLoginSchema = Joi.object({
 const updateAdminSchema = Joi.object({
     name: Joi.string().min(3).required().optional(),
     email: Joi.string().email().optional().custom((value, helper) => {
-        if (!value.endsWith('@students.unilorin.edu.ng')) {
+        if (!value.endsWith('@unilorin.edu.ng')) {
             return helper.message('The library is for University of Ilorin students only');
         }
         return value;
